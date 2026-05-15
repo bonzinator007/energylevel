@@ -1,0 +1,10 @@
+{
+  "name": "Energy Tracker",
+  "short_name": "Energy",
+  "description": "Track your daily energy levels based on the Lorenzen scale",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#f5f2eb",
+  "orientation": "portrait"
+}

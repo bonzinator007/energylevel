@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f2eb">
+<title>Energy Tracker</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2eb;
+    --bg-card: #ffffff;
+    --text-primary: #1a1814;
+    --text-secondary: #6b6760;
+    --text-muted: #a09d98;
+    --border: rgba(26,24,20,0.1);
+    --accent: #2d6a4f;
+    --accent-light: #e8f4ed;
+    --accent-mid: #52b788;
+    --warn: #c77d33;
+    --warn-light: #fef3e2;
+    --low: #c0392b;
+    --low-light: #fdecea;
+    --nav-h: 72px;
+    --radius: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151310;
+      --bg-card: #1e1c18;
+      --text-primary: #f0ece3;
+      --text-secondary: #9e9a92;
+      --text-muted: #5c5953;
+      --border: rgba(240,236,227,0.08);
+      --accent: #52b788;
+      --accent-light: #1a2e24;
+      --accent-mid: #74c69d;
+      --warn: #e9963f;
+      --warn-light: #2d2010;
+      --low: #e05c4b;
+      --low-light: #2d1512;
+    }
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { display: flex; flex-direction: column; height: 100dvh; }
+
+  .screen {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 calc(var(--nav-h) + 16px);
+  }
+  .screen.active { display: block; }
+
+  .screen-header {
+    padding: 56px 24px 24px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+  }
+  .screen-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+  .screen-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* LOG SCREEN */
+  .log-hero {
+    padding: 32px 24px 0;
+    text-align: center;
+  }
+  .log-hero-label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .energy-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--text-primary);
+    transition: color 0.3s;
+    min-height: 96px;
+  }
+  .energy-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    min-height: 20px;
+    transition: color 0.3s;
+  }
+
+  .slider-wrap {
+    padding: 32px 24px 0;
+  }
+  .slider-track {
+    position: relative;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .slider-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 4px;
+    background: var(--accent);
+    transition: width 0.1s, background 0.3s;
+  }
+  input[type=range] {
+    position: absolute;
+    left: 0; top: -6px;
+    width: 100%;
+    height: 20px;
+    opacity: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .log-btn {
+    display: block;
+    width: calc(100% - 48px);
+    margin: 28px auto 0;
+    padding: 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .log-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  .today-entries {
+    padding: 24px;
+  }
+  .today-entries h2 {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .entry-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .entry-item:last-child { border-bottom: none; }
+  .entry-time { font-size: 14px; color: var(--text-secondary); }
+  .entry-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text-primary);
+  }
+  .daily-avg-card {
+    margin: 0 24px 24px;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .daily-avg-label { font-size: 13px; color: var(--text-secondary); }
+  .daily-avg-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--text-primary);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* CHARTS SCREEN */
+  .chart-tabs {
+    display: flex;
+    gap: 0;
+    padding: 16px 24px 0;
+  }
+  .chart-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .chart-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .chart-section { display: none; padding: 24px; }
+  .chart-section.active { display: block; }
+
+  .chart-stat-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .stat-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-card-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-primary);
+    margin-top: 2px;
+  }
+  .stat-card-val.good { color: var(--accent); }
+  .stat-card-val.mid { color: var(--warn); }
+  .stat-card-val.low { color: var(--low); }
+
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 220px;
+  }
+
+  .chart-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    height: var(--nav-h);
+    display: flex;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 20;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    transition: color 0.15s;
+    padding: 0;
+  }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn svg { width: 22px; height: 22px; stroke-width: 1.5; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+
+  .toast {
+    position: fixed;
+    bottom: calc(var(--nav-h) + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary);
+    color: var(--bg);
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- LOG SCREEN -->
+  <div class="screen active" id="screen-log">
+    <div class="screen-header">
+      <h1>How are you feeling?</h1>
+      <p id="log-date"></p>
+    </div>
+
+    <div class="log-hero">
+      <div class="log-hero-label">Energy level</div>
+      <div class="energy-display" id="energy-display">5</div>
+      <div class="energy-label" id="energy-label">Moderate</div>
+    </div>
+
+    <div class="slider-wrap">
+      <div class="slider-track">
+        <div class="slider-fill" id="slider-fill"></div>
+        <input type="range" min="0" max="10" value="5" step="1" id="energy-slider" aria-label="Energy level 0 to 10">
+      </div>
+      <div class="slider-labels"><span>0 Empty</span><span>10 Full</span></div>
+    </div>
+
+    <button class="log-btn" id="log-btn">Log this entry</button>
+
+    <div class="today-entries">
+      <h2>Today's entries</h2>
+      <div id="entries-list"><div class="empty-state">No entries yet today.<br>Log your first reading above.</div></div>
+    </div>
+  </div>
+
+  <!-- CHARTS SCREEN -->
+  <div class="screen" id="screen-charts">
+    <div class="screen-header">
+      <h1>Your trends</h1>
+      <p>Daily average energy levels</p>
+    </div>
+
+    <div class="chart-tabs">
+      <button class="chart-tab active" data-tab="week">Week</button>
+      <button class="chart-tab" data-tab="month">Month</button>
+    </div>
+
+    <div class="chart-section active" id="tab-week">
+      <div class="chart-stat-row">
+        <div class="stat-card">
+          <div class="stat-card-label">7-day avg</div>
+          <div class="stat-card-val" id="week-avg">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Best day</div>
+          <div class="stat-card-val" id="week-best">—</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="weekChart" role="img" aria-label="Line chart showing average daily energy levels over the last 7 days">No data yet.</canvas>
+      </div>
+      <div class="chart-note">Each point = daily average · Scale 0–10</div>
+    </div>
+
+    <div class="chart-section" id="tab-month">
+      <div class="chart-stat-row">
+        <div class="stat-card">
+          <div class="stat-card-label">30-day avg</div>
+          <div class="stat-card-val" id="month-avg">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Best day</div>
+          <div class="stat-card-val" id="month-best">—</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="monthChart" role="img" aria-label="Line chart showing average daily energy levels over the last 30 days">No data yet.</canvas>
+      </div>
+      <div class="chart-note">Each point = daily average · Scale 0–10</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="log" aria-label="Log energy">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="14"/></svg>
+      Log
+    </button>
+    <button class="nav-btn" data-screen="charts" aria-label="View charts">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Trends
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── Storage ──────────────────────────────────────────────────────────
+const STORE_KEY = 'et_entries_v1';
+
+function loadEntries() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveEntries(entries) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+}
+
+function addEntry(value) {
+  const entries = loadEntries();
+  entries.push({ ts: new Date().toISOString(), v: value });
+  saveEntries(entries);
+}
+
+// ── Date helpers ──────────────────────────────────────────────────────
+function dateKey(ts) { return ts.slice(0, 10); }
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+function avg(arr) {
+  if (!arr.length) return null;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function getPastDays(n) {
+  const days = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
+}
+
+function groupByDay(entries) {
+  const map = {};
+  entries.forEach(e => {
+    const k = dateKey(e.ts);
+    if (!map[k]) map[k] = [];
+    map[k].push(e.v);
+  });
+  return map;
+}
+
+// ── Energy labels ─────────────────────────────────────────────────────
+function energyLabel(v) {
+  if (v === 0) return 'Completely empty';
+  if (v <= 2)  return 'Very low';
+  if (v <= 4)  return 'Low';
+  if (v === 5) return 'Moderate';
+  if (v <= 7)  return 'Good';
+  if (v <= 9)  return 'Very good';
+  return 'Full energy';
+}
+
+function energyColor(v) {
+  if (v <= 3) return 'var(--low)';
+  if (v <= 6) return 'var(--warn)';
+  return 'var(--accent)';
+}
+
+function valueClass(v) {
+  if (v === null) return '';
+  if (v <= 3) return 'low';
+  if (v <= 6) return 'mid';
+  return 'good';
+}
+
+// ── Slider ────────────────────────────────────────────────────────────
+const slider = document.getElementById('energy-slider');
+const display = document.getElementById('energy-display');
+const labelEl = document.getElementById('energy-label');
+const fillEl  = document.getElementById('slider-fill');
+
+function updateSliderUI(v) {
+  display.textContent = v;
+  display.style.color = energyColor(v);
+  labelEl.textContent = energyLabel(v);
+  labelEl.style.color = energyColor(v);
+  fillEl.style.width = (v / 10 * 100) + '%';
+  fillEl.style.background = energyColor(v);
+}
+
+slider.addEventListener('input', () => updateSliderUI(+slider.value));
+updateSliderUI(5);
+
+// ── Log button ────────────────────────────────────────────────────────
+document.getElementById('log-btn').addEventListener('click', () => {
+  const v = +slider.value;
+  addEntry(v);
+  renderTodayEntries();
+  showToast('Logged: ' + v + ' · ' + energyLabel(v));
+});
+
+// ── Today's entries ───────────────────────────────────────────────────
+function renderTodayEntries() {
+  const entries = loadEntries().filter(e => dateKey(e.ts) === todayKey());
+  const list = document.getElementById('entries-list');
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state">No entries yet today.<br>Log your first reading above.</div>';
+    return;
+  }
+
+  // daily avg card
+  const todayAvg = avg(entries.map(e => e.v));
+  const avgHtml = `<div class="daily-avg-card">
+    <span class="daily-avg-label">Today's average</span>
+    <span class="daily-avg-val">${todayAvg.toFixed(1)}</span>
+  </div>`;
+
+  const items = entries.slice().reverse().map(e => {
+    const t = new Date(e.ts);
+    const time = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `<div class="entry-item">
+      <span class="entry-time">${time}</span>
+      <span class="entry-val" style="color:${energyColor(e.v)}">${e.v}</span>
+    </div>`;
+  }).join('');
+
+  list.innerHTML = avgHtml + items;
+}
+
+// ── Date label ────────────────────────────────────────────────────────
+document.getElementById('log-date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+
+// ── Charts ────────────────────────────────────────────────────────────
+let weekChart = null, monthChart = null;
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: {
+    backgroundColor: '#1a1814',
+    titleColor: '#f0ece3',
+    bodyColor: '#f0ece3',
+    padding: 10,
+    cornerRadius: 8,
+    callbacks: {
+      label: ctx => ' ' + ctx.parsed.y.toFixed(1) + ' — ' + energyLabel(Math.round(ctx.parsed.y))
+    }
+  }},
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9a92', maxRotation: 0 },
+      border: { display: false }
+    },
+    y: {
+      min: 0, max: 10,
+      grid: { color: 'rgba(0,0,0,0.06)' },
+      ticks: {
+        stepSize: 2,
+        font: { family: 'DM Sans', size: 11 },
+        color: '#9e9a92',
+        callback: v => v
+      },
+      border: { display: false }
+    }
+  }
+};
+
+function buildChartData(days) {
+  const entries = loadEntries();
+  const byDay = groupByDay(entries);
+  const labels = days.map(d => {
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+  const data = days.map(d => {
+    const vals = byDay[d];
+    return vals ? parseFloat(avg(vals).toFixed(2)) : null;
+  });
+  return { labels, data };
+}
+
+function statColor(v) {
+  if (v === null) return '';
+  if (v <= 3) return '#c0392b';
+  if (v <= 6) return '#c77d33';
+  return '#2d6a4f';
+}
+
+function renderCharts() {
+  const weekDays  = getPastDays(7);
+  const monthDays = getPastDays(30);
+
+  const wData = buildChartData(weekDays);
+  const mData = buildChartData(monthDays);
+
+  // Week stats
+  const wVals = wData.data.filter(v => v !== null);
+  const wAvg  = wVals.length ? avg(wVals) : null;
+  const wBest = wVals.length ? Math.max(...wVals) : null;
+  const wAvgEl  = document.getElementById('week-avg');
+  const wBestEl = document.getElementById('week-best');
+  wAvgEl.textContent  = wAvg  !== null ? wAvg.toFixed(1)  : '—';
+  wBestEl.textContent = wBest !== null ? wBest.toFixed(1) : '—';
+  wAvgEl.style.color  = statColor(wAvg);
+  wBestEl.style.color = statColor(wBest);
+
+  // Month stats
+  const mVals = mData.data.filter(v => v !== null);
+  const mAvg  = mVals.length ? avg(mVals) : null;
+  const mBest = mVals.length ? Math.max(...mVals) : null;
+  const mAvgEl  = document.getElementById('month-avg');
+  const mBestEl = document.getElementById('month-best');
+  mAvgEl.textContent  = mAvg  !== null ? mAvg.toFixed(1)  : '—';
+  mBestEl.textContent = mBest !== null ? mBest.toFixed(1) : '—';
+  mAvgEl.style.color  = statColor(mAvg);
+  mBestEl.style.color = statColor(mBest);
+
+  const lineColor = '#2d6a4f';
+  const pointColor = '#52b788';
+
+  const datasetBase = (data) => ({
+    data,
+    borderColor: lineColor,
+    backgroundColor: 'rgba(45,106,79,0.08)',
+    pointBackgroundColor: pointColor,
+    pointBorderColor: lineColor,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    borderWidth: 2,
+    fill: true,
+    tension: 0.35,
+    spanGaps: false
+  });
+
+  if (weekChart) weekChart.destroy();
+  weekChart = new Chart(document.getElementById('weekChart'), {
+    type: 'line',
+    data: { labels: wData.labels, datasets: [{ ...datasetBase(wData.data), label: 'Energy' }] },
+    options: { ...chartDefaults, scales: { ...chartDefaults.scales,
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: false } }
+    }}
+  });
+
+  if (monthChart) monthChart.destroy();
+  monthChart = new Chart(document.getElementById('monthChart'), {
+    type: 'line',
+    data: { labels: mData.labels, datasets: [{ ...datasetBase(mData.data), label: 'Energy' }] },
+    options: { ...chartDefaults, scales: { ...chartDefaults.scales,
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: true, maxTicksLimit: 8 } }
+    }}
+  });
+}
+
+// ── Navigation ────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (id === 'charts') renderCharts();
+  });
+});
+
+// Chart tabs
+document.querySelectorAll('.chart-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.chart-section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+renderTodayEntries();
+</script>
+</body>
+</html>
