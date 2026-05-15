@@ -71,7 +71,7 @@
   .screen.active { display: block; }
 
   .screen-header {
-    padding: 56px 24px 24px;
+    padding: 56px 24px 20px;
     position: sticky;
     top: 0;
     background: var(--bg);
@@ -85,254 +85,96 @@
     color: var(--text-primary);
     letter-spacing: -0.5px;
   }
-  .screen-header p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
+  .screen-header p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-  /* LOG SCREEN */
-  .log-hero {
-    padding: 32px 24px 0;
-    text-align: center;
-  }
-  .log-hero-label {
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-  }
+  .log-hero { padding: 28px 24px 0; text-align: center; }
+  .log-hero-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
   .energy-display {
     font-family: 'DM Serif Display', serif;
-    font-size: 96px;
+    font-size: 88px;
     line-height: 1;
     color: var(--text-primary);
     transition: color 0.3s;
-    min-height: 96px;
+    min-height: 88px;
   }
-  .energy-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-    min-height: 20px;
-    transition: color 0.3s;
-  }
+  .energy-label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; min-height: 20px; transition: color 0.3s; }
 
-  .slider-wrap {
-    padding: 32px 24px 0;
-  }
-  .slider-track {
-    position: relative;
-    height: 8px;
-    background: var(--border);
-    border-radius: 4px;
-    margin-bottom: 8px;
-  }
-  .slider-fill {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    border-radius: 4px;
-    background: var(--accent);
-    transition: width 0.1s, background 0.3s;
-  }
-  input[type=range] {
-    position: absolute;
-    left: 0; top: -6px;
-    width: 100%;
-    height: 20px;
-    opacity: 0;
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  .slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
+  .slider-wrap { padding: 28px 24px 0; }
+  .slider-track { position: relative; height: 8px; background: var(--border); border-radius: 4px; margin-bottom: 8px; }
+  .slider-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--accent); transition: width 0.1s, background 0.3s; }
+  input[type=range] { position: absolute; left: 0; top: -6px; width: 100%; height: 20px; opacity: 0; cursor: pointer; -webkit-appearance: none; margin: 0; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
 
-  .log-btn {
-    display: block;
-    width: calc(100% - 48px);
-    margin: 28px auto 0;
-    padding: 18px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    transition: opacity 0.15s, transform 0.1s;
-  }
+  /* Past entry toggle */
+  .datetime-toggle { margin: 20px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .toggle-switch { position: relative; width: 40px; height: 24px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 12px; cursor: pointer; transition: background 0.2s; border: 1px solid var(--border); }
+  .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 2px; top: 2px; background: var(--text-muted); border-radius: 50%; transition: transform 0.2s, background 0.2s; }
+  .toggle-switch input:checked + .toggle-slider { background: var(--accent-light); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); background: var(--accent); }
+  .toggle-label { font-size: 13px; color: var(--text-secondary); }
+
+  .datetime-picker { margin: 12px 24px 0; display: none; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .datetime-picker.visible { display: block; }
+  .datetime-picker label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .dt-row { display: flex; gap: 8px; }
+  .dt-col { flex: 1; }
+  .dt-col label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); display: block; margin-bottom: 4px; }
+  .dt-select { width: 100%; padding: 10px 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text-primary); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; -webkit-appearance: none; appearance: none; text-align: center; cursor: pointer; }
+  .dt-select:focus { outline: none; border-color: var(--accent); }
+  .datetime-picker input[type=time] { width: 100%; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text-primary); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; -webkit-appearance: none; opacity: 1; }
+  .datetime-picker input[type=time]:focus { outline: none; border-color: var(--accent); }
+  .past-badge { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--warn); background: var(--warn-light); padding: 3px 10px; border-radius: 100px; }
+
+  .log-btn { display: block; width: calc(100% - 48px); margin: 20px auto 0; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; letter-spacing: 0.01em; transition: opacity 0.15s, transform 0.1s; }
   .log-btn:active { opacity: 0.85; transform: scale(0.98); }
 
-  .today-entries {
-    padding: 24px;
-  }
-  .today-entries h2 {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-  }
-  .entry-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .entries-section { padding: 24px; }
+  .entries-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .entries-section-header h2 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .date-nav { display: flex; align-items: center; gap: 8px; }
+  .date-nav-btn { background: none; border: 1px solid var(--border); border-radius: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); font-size: 22px; transition: background 0.15s; }
+  .date-nav-btn:active { background: var(--border); }
+  .date-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .date-nav-label { font-size: 12px; color: var(--text-secondary); min-width: 60px; text-align: center; }
+
+  .entry-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
   .entry-item:last-child { border-bottom: none; }
+  .entry-left { display: flex; flex-direction: column; gap: 2px; }
   .entry-time { font-size: 14px; color: var(--text-secondary); }
-  .entry-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--text-primary);
-  }
-  .daily-avg-card {
-    margin: 0 24px 24px;
-    padding: 20px;
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .entry-past-tag { font-size: 11px; color: var(--warn); }
+  .entry-val { font-family: 'DM Serif Display', serif; font-size: 22px; }
+
+  .daily-avg-card { margin: 0 0 20px; padding: 16px 20px; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .daily-avg-label { font-size: 13px; color: var(--text-secondary); }
-  .daily-avg-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    color: var(--text-primary);
-  }
+  .daily-avg-val { font-family: 'DM Serif Display', serif; font-size: 32px; }
+  .empty-state { text-align: center; padding: 40px 24px; color: var(--text-muted); font-size: 14px; }
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 24px;
-    color: var(--text-muted);
-    font-size: 14px;
-  }
-
-  /* CHARTS SCREEN */
-  .chart-tabs {
-    display: flex;
-    gap: 0;
-    padding: 16px 24px 0;
-  }
-  .chart-tab {
-    flex: 1;
-    padding: 10px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-  }
-  .chart-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
+  /* Charts */
+  .chart-tabs { display: flex; padding: 16px 24px 0; }
+  .chart-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 500; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+  .chart-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .chart-section { display: none; padding: 24px; }
   .chart-section.active { display: block; }
-
-  .chart-stat-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .stat-card {
-    flex: 1;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-  }
+  .chart-stat-row { display: flex; gap: 12px; margin-bottom: 24px; }
+  .stat-card { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
   .stat-card-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
-  .stat-card-val {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--text-primary);
-    margin-top: 2px;
-  }
-  .stat-card-val.good { color: var(--accent); }
-  .stat-card-val.mid { color: var(--warn); }
-  .stat-card-val.low { color: var(--low); }
+  .stat-card-val { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text-primary); margin-top: 2px; }
+  .chart-wrap { position: relative; width: 100%; height: 220px; }
+  .chart-note { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; }
 
-  .chart-wrap {
-    position: relative;
-    width: 100%;
-    height: 220px;
-  }
-
-  .chart-note {
-    font-size: 12px;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 12px;
-  }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    height: var(--nav-h);
-    display: flex;
-    background: var(--bg-card);
-    border-top: 1px solid var(--border);
-    position: relative;
-    z-index: 20;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    transition: color 0.15s;
-    padding: 0;
-  }
+  /* Nav */
+  .bottom-nav { height: var(--nav-h); display: flex; background: var(--bg-card); border-top: 1px solid var(--border); position: relative; z-index: 20; padding-bottom: env(safe-area-inset-bottom, 0); }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400; transition: color 0.15s; padding: 0; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn svg { width: 22px; height: 22px; stroke-width: 1.5; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
-  .toast {
-    position: fixed;
-    bottom: calc(var(--nav-h) + 16px);
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--text-primary);
-    color: var(--bg);
-    font-size: 13px;
-    padding: 10px 20px;
-    border-radius: 100px;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 100;
-  }
+  .toast { position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text-primary); color: var(--bg); font-size: 13px; padding: 10px 20px; border-radius: 100px; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; white-space: nowrap; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-
 <div class="app">
 
   <!-- LOG SCREEN -->
@@ -356,10 +198,38 @@
       <div class="slider-labels"><span>0 Empty</span><span>10 Full</span></div>
     </div>
 
+    <div class="datetime-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="past-toggle">
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="toggle-label">Log for a past date &amp; time</span>
+    </div>
+
+    <div class="datetime-picker" id="datetime-picker">
+      <div class="dt-row">
+        <div class="dt-col"><label>Day</label><select class="dt-select" id="past-day"></select></div>
+        <div class="dt-col"><label>Month</label><select class="dt-select" id="past-month"></select></div>
+        <div class="dt-col"><label>Year</label><select class="dt-select" id="past-year"></select></div>
+      </div>
+      <div style="margin-top:10px;">
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);display:block;margin-bottom:4px;">Time</label>
+        <input type="time" id="past-time" style="width:100%;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text-primary);background:var(--bg);border:1px solid var(--border);border-radius:8px;-webkit-appearance:none;">
+      </div>
+      <div class="past-badge" id="past-badge" style="display:none"></div>
+    </div>
+
     <button class="log-btn" id="log-btn">Log this entry</button>
 
-    <div class="today-entries">
-      <h2>Today's entries</h2>
+    <div class="entries-section">
+      <div class="entries-section-header">
+        <h2 id="entries-day-label">Today's entries</h2>
+        <div class="date-nav">
+          <button class="date-nav-btn" id="day-prev" aria-label="Previous day">&#8249;</button>
+          <span class="date-nav-label" id="day-nav-date">Today</span>
+          <button class="date-nav-btn" id="day-next" aria-label="Next day" disabled>&#8250;</button>
+        </div>
+      </div>
       <div id="entries-list"><div class="empty-state">No entries yet today.<br>Log your first reading above.</div></div>
     </div>
   </div>
@@ -370,43 +240,38 @@
       <h1>Your trends</h1>
       <p>Daily average energy levels</p>
     </div>
-
     <div class="chart-tabs">
-      <button class="chart-tab active" data-tab="week">Week</button>
+      <button class="chart-tab active" data-tab="day">Day</button>
+      <button class="chart-tab" data-tab="week">Week</button>
       <button class="chart-tab" data-tab="month">Month</button>
     </div>
-
-    <div class="chart-section active" id="tab-week">
+    <div class="chart-section active" id="tab-day">
+      <div class="date-nav" style="justify-content:center;gap:12px;padding:16px 0 4px;">
+        <button class="date-nav-btn" id="chart-day-prev" aria-label="Previous day">&#8249;</button>
+        <span style="font-size:14px;color:var(--text-secondary);min-width:120px;text-align:center;" id="chart-day-label">Today</span>
+        <button class="date-nav-btn" id="chart-day-next" aria-label="Next day" disabled>&#8250;</button>
+      </div>
+      <div class="chart-stat-row" style="margin-top:16px;">
+        <div class="stat-card"><div class="stat-card-label">Day average</div><div class="stat-card-val" id="day-avg">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Entries</div><div class="stat-card-val" id="day-count">—</div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="dayChart" role="img" aria-label="Line chart of individual energy entries for selected day">No data yet.</canvas></div>
+      <div class="chart-note">Each point = individual entry · Scale 0–10</div>
+    </div>
+    <div class="chart-section" id="tab-week">
       <div class="chart-stat-row">
-        <div class="stat-card">
-          <div class="stat-card-label">7-day avg</div>
-          <div class="stat-card-val" id="week-avg">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-label">Best day</div>
-          <div class="stat-card-val" id="week-best">—</div>
-        </div>
+        <div class="stat-card"><div class="stat-card-label">7-day avg</div><div class="stat-card-val" id="week-avg">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Best day</div><div class="stat-card-val" id="week-best">—</div></div>
       </div>
-      <div class="chart-wrap">
-        <canvas id="weekChart" role="img" aria-label="Line chart showing average daily energy levels over the last 7 days">No data yet.</canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="weekChart" role="img" aria-label="Line chart of average daily energy over last 7 days">No data yet.</canvas></div>
       <div class="chart-note">Each point = daily average · Scale 0–10</div>
     </div>
-
     <div class="chart-section" id="tab-month">
       <div class="chart-stat-row">
-        <div class="stat-card">
-          <div class="stat-card-label">30-day avg</div>
-          <div class="stat-card-val" id="month-avg">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-label">Best day</div>
-          <div class="stat-card-val" id="month-best">—</div>
-        </div>
+        <div class="stat-card"><div class="stat-card-label">30-day avg</div><div class="stat-card-val" id="month-avg">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Best day</div><div class="stat-card-val" id="month-best">—</div></div>
       </div>
-      <div class="chart-wrap">
-        <canvas id="monthChart" role="img" aria-label="Line chart showing average daily energy levels over the last 30 days">No data yet.</canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="monthChart" role="img" aria-label="Line chart of average daily energy over last 30 days">No data yet.</canvas></div>
       <div class="chart-note">Each point = daily average · Scale 0–10</div>
     </div>
   </div>
@@ -428,79 +293,63 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── Storage ──────────────────────────────────────────────────────────
 const STORE_KEY = 'et_entries_v1';
 
 function loadEntries() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
   catch { return []; }
 }
-
-function saveEntries(entries) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(entries));
-}
-
-function addEntry(value) {
+function saveEntries(e) { localStorage.setItem(STORE_KEY, JSON.stringify(e)); }
+function addEntry(value, ts) {
   const entries = loadEntries();
-  entries.push({ ts: new Date().toISOString(), v: value });
+  entries.push({ ts, v: value });
+  entries.sort((a, b) => a.ts.localeCompare(b.ts));
   saveEntries(entries);
 }
 
-// ── Date helpers ──────────────────────────────────────────────────────
 function dateKey(ts) { return ts.slice(0, 10); }
 function todayKey() { return new Date().toISOString().slice(0, 10); }
-
-function avg(arr) {
-  if (!arr.length) return null;
-  return arr.reduce((a, b) => a + b, 0) / arr.length;
-}
+function avg(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
 
 function getPastDays(n) {
   const days = [];
   for (let i = n - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+    const d = new Date(); d.setDate(d.getDate() - i);
     days.push(d.toISOString().slice(0, 10));
   }
   return days;
 }
-
 function groupByDay(entries) {
   const map = {};
-  entries.forEach(e => {
-    const k = dateKey(e.ts);
-    if (!map[k]) map[k] = [];
-    map[k].push(e.v);
-  });
+  entries.forEach(e => { const k = dateKey(e.ts); if (!map[k]) map[k] = []; map[k].push(e.v); });
   return map;
 }
-
-// ── Energy labels ─────────────────────────────────────────────────────
-function energyLabel(v) {
-  if (v === 0) return 'Completely empty';
-  if (v <= 2)  return 'Very low';
-  if (v <= 4)  return 'Low';
-  if (v === 5) return 'Moderate';
-  if (v <= 7)  return 'Good';
-  if (v <= 9)  return 'Very good';
-  return 'Full energy';
+function formatRelDay(key) {
+  const today = todayKey();
+  if (key === today) return 'Today';
+  const d = new Date(key + 'T12:00:00');
+  const diff = Math.round((new Date(today + 'T12:00:00') - d) / 86400000);
+  if (diff === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+function energyLabel(v) {
+  if (v === 0) return 'Completely empty';
+  if (v <= 2) return 'Very low';
+  if (v <= 4) return 'Low';
+  if (v === 5) return 'Moderate';
+  if (v <= 7) return 'Good';
+  if (v <= 9) return 'Very good';
+  return 'Full energy';
+}
 function energyColor(v) {
   if (v <= 3) return 'var(--low)';
   if (v <= 6) return 'var(--warn)';
   return 'var(--accent)';
 }
 
-function valueClass(v) {
-  if (v === null) return '';
-  if (v <= 3) return 'low';
-  if (v <= 6) return 'mid';
-  return 'good';
-}
-
-// ── Slider ────────────────────────────────────────────────────────────
-const slider = document.getElementById('energy-slider');
+// Slider
+const slider  = document.getElementById('energy-slider');
 const display = document.getElementById('energy-display');
 const labelEl = document.getElementById('energy-label');
 const fillEl  = document.getElementById('slider-fill');
@@ -513,40 +362,150 @@ function updateSliderUI(v) {
   fillEl.style.width = (v / 10 * 100) + '%';
   fillEl.style.background = energyColor(v);
 }
-
 slider.addEventListener('input', () => updateSliderUI(+slider.value));
 updateSliderUI(5);
 
-// ── Log button ────────────────────────────────────────────────────────
-document.getElementById('log-btn').addEventListener('click', () => {
-  const v = +slider.value;
-  addEntry(v);
-  renderTodayEntries();
-  showToast('Logged: ' + v + ' · ' + energyLabel(v));
+// Past entry toggle
+const pastToggle = document.getElementById('past-toggle');
+const pickerEl   = document.getElementById('datetime-picker');
+const pastBadge  = document.getElementById('past-badge');
+
+const pastTime = document.getElementById('past-time');
+const selDay   = document.getElementById('past-day');
+const selMonth = document.getElementById('past-month');
+const selYear  = document.getElementById('past-year');
+
+const _pad = n => String(n).padStart(2, '0');
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function buildSelects() {
+  const now = new Date();
+  const curY = now.getFullYear();
+  // Years: last 2 years up to current
+  selYear.innerHTML = '';
+  for (let y = curY; y >= curY - 2; y--) {
+    const o = document.createElement('option'); o.value = y; o.textContent = y; selYear.appendChild(o);
+  }
+  selYear.value = curY;
+  // Months
+  selMonth.innerHTML = '';
+  MONTHS.forEach((m, i) => { const o = document.createElement('option'); o.value = i + 1; o.textContent = m; selMonth.appendChild(o); });
+  selMonth.value = now.getMonth() + 1;
+  // Days
+  updateDays();
+  selDay.value = now.getDate();
+  // Time: 1 hour ago
+  const h1 = new Date(now - 3600000);
+  pastTime.value = _pad(h1.getHours()) + ':' + _pad(h1.getMinutes());
+}
+
+function updateDays() {
+  const y = +selYear.value || new Date().getFullYear();
+  const m = +selMonth.value || new Date().getMonth() + 1;
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const prev = +selDay.value;
+  selDay.innerHTML = '';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const o = document.createElement('option'); o.value = d; o.textContent = _pad(d); selDay.appendChild(o);
+  }
+  selDay.value = Math.min(prev || 1, daysInMonth);
+  // Clamp to today if selected month/year is current
+  clampToToday();
+}
+
+function clampToToday() {
+  const now = new Date();
+  const y = +selYear.value, m = +selMonth.value, d = +selDay.value;
+  if (y === now.getFullYear() && m === now.getMonth() + 1) {
+    // remove future days
+    Array.from(selDay.options).forEach(o => { if (+o.value > now.getDate()) o.disabled = true; else o.disabled = false; });
+    if (d > now.getDate()) selDay.value = now.getDate();
+  } else {
+    Array.from(selDay.options).forEach(o => o.disabled = false);
+  }
+}
+
+buildSelects();
+selYear.addEventListener('change', () => { updateDays(); updatePastBadge(); });
+selMonth.addEventListener('change', () => { updateDays(); updatePastBadge(); });
+selDay.addEventListener('change', updatePastBadge);
+pastTime.addEventListener('change', updatePastBadge);
+
+pastToggle.addEventListener('change', () => {
+  pickerEl.classList.toggle('visible', pastToggle.checked);
+  updatePastBadge();
 });
 
-// ── Today's entries ───────────────────────────────────────────────────
-function renderTodayEntries() {
-  const entries = loadEntries().filter(e => dateKey(e.ts) === todayKey());
-  const list = document.getElementById('entries-list');
+function getSelectedDate() {
+  return `${selYear.value}-${_pad(+selMonth.value)}-${_pad(+selDay.value)}`;
+}
+
+function updatePastBadge() {
+  if (!pastToggle.checked) { pastBadge.style.display = 'none'; return; }
+  const dateStr = getSelectedDate();
+  const timeStr = pastTime.value || '00:00';
+  const d = new Date(dateStr + 'T' + timeStr);
+  pastBadge.textContent = '↩ ' + d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })
+    + ' · ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+  pastBadge.style.display = 'inline-block';
+}
+
+// Log button
+document.getElementById('log-btn').addEventListener('click', () => {
+  const v = +slider.value;
+  let ts;
+  if (pastToggle.checked) {
+    const chosen = new Date(getSelectedDate() + 'T' + (pastTime.value || '00:00'));
+    if (chosen > new Date()) { showToast('Cannot log a future time'); return; }
+    ts = chosen.toISOString();
+  } else {
+    ts = new Date().toISOString();
+  }
+  addEntry(v, ts);
+  viewedDateKey = dateKey(ts);
+  renderEntries();
+  showToast('Logged: ' + v + ' · ' + energyLabel(v));
+  pastToggle.checked = false;
+  pickerEl.classList.remove('visible');
+  pastBadge.style.display = 'none';
+  buildSelects();
+});
+
+// Entries with date navigation
+let viewedDateKey = todayKey();
+
+function renderEntries() {
+  const allEntries = loadEntries();
+  const entries    = allEntries.filter(e => dateKey(e.ts) === viewedDateKey);
+  const list       = document.getElementById('entries-list');
+  const isToday    = viewedDateKey === todayKey();
+
+  document.getElementById('entries-day-label').textContent =
+    isToday ? "Today's entries" : formatRelDay(viewedDateKey) + "'s entries";
+  document.getElementById('day-nav-date').textContent = formatRelDay(viewedDateKey);
+  document.getElementById('day-next').disabled = isToday;
+  document.getElementById('day-prev').disabled = !allEntries.some(e => dateKey(e.ts) < viewedDateKey);
 
   if (!entries.length) {
-    list.innerHTML = '<div class="empty-state">No entries yet today.<br>Log your first reading above.</div>';
+    list.innerHTML = '<div class="empty-state">No entries for this day.</div>';
     return;
   }
 
-  // daily avg card
-  const todayAvg = avg(entries.map(e => e.v));
+  const dayAvg  = avg(entries.map(e => e.v));
   const avgHtml = `<div class="daily-avg-card">
-    <span class="daily-avg-label">Today's average</span>
-    <span class="daily-avg-val">${todayAvg.toFixed(1)}</span>
+    <span class="daily-avg-label">Day's average</span>
+    <span class="daily-avg-val" style="color:${energyColor(dayAvg)}">${dayAvg.toFixed(1)}</span>
   </div>`;
 
   const items = entries.slice().reverse().map(e => {
-    const t = new Date(e.ts);
-    const time = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const t    = new Date(e.ts);
+    const time = t.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    const isPast = dateKey(e.ts) !== todayKey();
     return `<div class="entry-item">
-      <span class="entry-time">${time}</span>
+      <div class="entry-left">
+        <span class="entry-time">${time}</span>
+        ${isPast ? '<span class="entry-past-tag">past entry</span>' : ''}
+      </div>
       <span class="entry-val" style="color:${energyColor(e.v)}">${e.v}</span>
     </div>`;
   }).join('');
@@ -554,57 +513,42 @@ function renderTodayEntries() {
   list.innerHTML = avgHtml + items;
 }
 
-// ── Date label ────────────────────────────────────────────────────────
-document.getElementById('log-date').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+document.getElementById('day-prev').addEventListener('click', () => {
+  const keys = loadEntries().map(e => dateKey(e.ts)).filter(k => k < viewedDateKey).sort();
+  if (keys.length) { viewedDateKey = keys[keys.length - 1]; renderEntries(); }
+});
+document.getElementById('day-next').addEventListener('click', () => {
+  const keys = loadEntries().map(e => dateKey(e.ts)).filter(k => k > viewedDateKey).sort();
+  viewedDateKey = keys.length ? keys[0] : todayKey();
+  renderEntries();
+});
 
-// ── Charts ────────────────────────────────────────────────────────────
-let weekChart = null, monthChart = null;
+// Date label
+document.getElementById('log-date').textContent =
+  new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+
+// Charts
+let dayChart = null, weekChart = null, monthChart = null;
 
 const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: true, maintainAspectRatio: false,
   plugins: { legend: { display: false }, tooltip: {
-    backgroundColor: '#1a1814',
-    titleColor: '#f0ece3',
-    bodyColor: '#f0ece3',
-    padding: 10,
-    cornerRadius: 8,
-    callbacks: {
-      label: ctx => ' ' + ctx.parsed.y.toFixed(1) + ' — ' + energyLabel(Math.round(ctx.parsed.y))
-    }
+    backgroundColor: '#1a1814', titleColor: '#f0ece3', bodyColor: '#f0ece3',
+    padding: 10, cornerRadius: 8,
+    callbacks: { label: ctx => ' ' + ctx.parsed.y.toFixed(1) + ' — ' + energyLabel(Math.round(ctx.parsed.y)) }
   }},
   scales: {
-    x: {
-      grid: { display: false },
-      ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9a92', maxRotation: 0 },
-      border: { display: false }
-    },
-    y: {
-      min: 0, max: 10,
-      grid: { color: 'rgba(0,0,0,0.06)' },
-      ticks: {
-        stepSize: 2,
-        font: { family: 'DM Sans', size: 11 },
-        color: '#9e9a92',
-        callback: v => v
-      },
-      border: { display: false }
-    }
+    x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9e9a92', maxRotation: 0 }, border: { display: false } },
+    y: { min: 0, max: 10, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { stepSize: 2, font: { family: 'DM Sans', size: 11 }, color: '#9e9a92', callback: v => v }, border: { display: false } }
   }
 };
 
 function buildChartData(days) {
-  const entries = loadEntries();
-  const byDay = groupByDay(entries);
-  const labels = days.map(d => {
-    const dt = new Date(d + 'T12:00:00');
-    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  });
-  const data = days.map(d => {
-    const vals = byDay[d];
-    return vals ? parseFloat(avg(vals).toFixed(2)) : null;
-  });
-  return { labels, data };
+  const byDay = groupByDay(loadEntries());
+  return {
+    labels: days.map(d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' })),
+    data:   days.map(d => { const v = byDay[d]; return v ? parseFloat(avg(v).toFixed(2)) : null; })
+  };
 }
 
 function statColor(v) {
@@ -614,72 +558,96 @@ function statColor(v) {
   return '#2d6a4f';
 }
 
-function renderCharts() {
-  const weekDays  = getPastDays(7);
-  const monthDays = getPastDays(30);
+// ── Day chart state ───────────────────────────────────────────────────
+let chartDayKey = todayKey();
 
-  const wData = buildChartData(weekDays);
-  const mData = buildChartData(monthDays);
+function renderDayChart() {
+  const allEntries  = loadEntries();
+  const dayEntries  = allEntries.filter(e => dateKey(e.ts) === chartDayKey);
+  const dayLabels   = dayEntries.map(e => new Date(e.ts).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }));
+  const dayData     = dayEntries.map(e => e.v);
+  const dAvg        = dayData.length ? avg(dayData) : null;
+  const isToday     = chartDayKey === todayKey();
 
-  // Week stats
-  const wVals = wData.data.filter(v => v !== null);
-  const wAvg  = wVals.length ? avg(wVals) : null;
-  const wBest = wVals.length ? Math.max(...wVals) : null;
-  const wAvgEl  = document.getElementById('week-avg');
-  const wBestEl = document.getElementById('week-best');
-  wAvgEl.textContent  = wAvg  !== null ? wAvg.toFixed(1)  : '—';
-  wBestEl.textContent = wBest !== null ? wBest.toFixed(1) : '—';
-  wAvgEl.style.color  = statColor(wAvg);
-  wBestEl.style.color = statColor(wBest);
+  document.getElementById('day-avg').textContent   = dAvg !== null ? dAvg.toFixed(1) : '—';
+  document.getElementById('day-avg').style.color   = statColor(dAvg);
+  document.getElementById('day-count').textContent = dayData.length || '—';
+  document.getElementById('chart-day-label').textContent = formatRelDay(chartDayKey);
+  document.getElementById('chart-day-next').disabled = isToday;
 
-  // Month stats
-  const mVals = mData.data.filter(v => v !== null);
-  const mAvg  = mVals.length ? avg(mVals) : null;
-  const mBest = mVals.length ? Math.max(...mVals) : null;
-  const mAvgEl  = document.getElementById('month-avg');
-  const mBestEl = document.getElementById('month-best');
-  mAvgEl.textContent  = mAvg  !== null ? mAvg.toFixed(1)  : '—';
-  mBestEl.textContent = mBest !== null ? mBest.toFixed(1) : '—';
-  mAvgEl.style.color  = statColor(mAvg);
-  mBestEl.style.color = statColor(mBest);
+  const allKeys = [...new Set(allEntries.map(e => dateKey(e.ts)))].sort();
+  document.getElementById('chart-day-prev').disabled = allKeys[0] >= chartDayKey;
 
-  const lineColor = '#2d6a4f';
-  const pointColor = '#52b788';
-
-  const datasetBase = (data) => ({
-    data,
-    borderColor: lineColor,
-    backgroundColor: 'rgba(45,106,79,0.08)',
-    pointBackgroundColor: pointColor,
-    pointBorderColor: lineColor,
-    pointRadius: 5,
-    pointHoverRadius: 7,
-    borderWidth: 2,
-    fill: true,
-    tension: 0.35,
-    spanGaps: false
-  });
-
-  if (weekChart) weekChart.destroy();
-  weekChart = new Chart(document.getElementById('weekChart'), {
+  if (dayChart) dayChart.destroy();
+  dayChart = new Chart(document.getElementById('dayChart'), {
     type: 'line',
-    data: { labels: wData.labels, datasets: [{ ...datasetBase(wData.data), label: 'Energy' }] },
+    data: { labels: dayLabels, datasets: [{
+      data: dayData, label: 'Energy',
+      borderColor: '#2d6a4f', backgroundColor: 'rgba(45,106,79,0.08)',
+      pointBackgroundColor: '#52b788', pointBorderColor: '#2d6a4f',
+      pointRadius: 6, pointHoverRadius: 8, borderWidth: 2, fill: true, tension: 0.3
+    }]},
     options: { ...chartDefaults, scales: { ...chartDefaults.scales,
-      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: false } }
-    }}
-  });
-
-  if (monthChart) monthChart.destroy();
-  monthChart = new Chart(document.getElementById('monthChart'), {
-    type: 'line',
-    data: { labels: mData.labels, datasets: [{ ...datasetBase(mData.data), label: 'Energy' }] },
-    options: { ...chartDefaults, scales: { ...chartDefaults.scales,
-      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: true, maxTicksLimit: 8 } }
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: true, maxTicksLimit: 6 } }
     }}
   });
 }
 
-// ── Navigation ────────────────────────────────────────────────────────
+document.getElementById('chart-day-prev').addEventListener('click', () => {
+  const allKeys = [...new Set(loadEntries().map(e => dateKey(e.ts)))].sort();
+  const earlier = allKeys.filter(k => k < chartDayKey);
+  if (earlier.length) { chartDayKey = earlier[earlier.length - 1]; renderDayChart(); }
+});
+document.getElementById('chart-day-next').addEventListener('click', () => {
+  const allKeys = [...new Set(loadEntries().map(e => dateKey(e.ts)))].sort();
+  const later = allKeys.filter(k => k > chartDayKey);
+  chartDayKey = later.length ? later[0] : todayKey();
+  renderDayChart();
+});
+
+function renderCharts() {
+  renderDayChart();
+
+  const wData = buildChartData(getPastDays(7));
+  const mData = buildChartData(getPastDays(30));
+
+  const wVals = wData.data.filter(v => v !== null);
+  const wAvg  = wVals.length ? avg(wVals) : null;
+  const wBest = wVals.length ? Math.max(...wVals) : null;
+  document.getElementById('week-avg').textContent  = wAvg  !== null ? wAvg.toFixed(1)  : '—';
+  document.getElementById('week-best').textContent = wBest !== null ? wBest.toFixed(1) : '—';
+  document.getElementById('week-avg').style.color  = statColor(wAvg);
+  document.getElementById('week-best').style.color = statColor(wBest);
+
+  const mVals = mData.data.filter(v => v !== null);
+  const mAvg  = mVals.length ? avg(mVals) : null;
+  const mBest = mVals.length ? Math.max(...mVals) : null;
+  document.getElementById('month-avg').textContent  = mAvg  !== null ? mAvg.toFixed(1)  : '—';
+  document.getElementById('month-best').textContent = mBest !== null ? mBest.toFixed(1) : '—';
+  document.getElementById('month-avg').style.color  = statColor(mAvg);
+  document.getElementById('month-best').style.color = statColor(mBest);
+
+  const ds = (data) => ({
+    data, label: 'Energy',
+    borderColor: '#2d6a4f', backgroundColor: 'rgba(45,106,79,0.08)',
+    pointBackgroundColor: '#52b788', pointBorderColor: '#2d6a4f',
+    pointRadius: 5, pointHoverRadius: 7, borderWidth: 2, fill: true, tension: 0.35, spanGaps: false
+  });
+
+  if (weekChart) weekChart.destroy();
+  weekChart = new Chart(document.getElementById('weekChart'), {
+    type: 'line', data: { labels: wData.labels, datasets: [ds(wData.data)] },
+    options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: false } } } }
+  });
+
+  if (monthChart) monthChart.destroy();
+  monthChart = new Chart(document.getElementById('monthChart'), {
+    type: 'line', data: { labels: mData.labels, datasets: [ds(mData.data)] },
+    options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: true, maxTicksLimit: 8 } } } }
+  });
+}
+
+// Navigation
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const id = btn.dataset.screen;
@@ -690,8 +658,6 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if (id === 'charts') renderCharts();
   });
 });
-
-// Chart tabs
 document.querySelectorAll('.chart-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
@@ -701,16 +667,13 @@ document.querySelectorAll('.chart-tab').forEach(tab => {
   });
 });
 
-// ── Toast ─────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────
-renderTodayEntries();
+renderEntries();
 </script>
 </body>
 </html>
