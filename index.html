@@ -102,8 +102,14 @@
   .slider-wrap { padding: 28px 24px 0; }
   .slider-track { position: relative; height: 8px; background: var(--border); border-radius: 4px; margin-bottom: 8px; }
   .slider-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--accent); transition: width 0.1s, background 0.3s; }
-  input[type=range] { position: absolute; left: 0; top: -6px; width: 100%; height: 20px; opacity: 0; cursor: pointer; -webkit-appearance: none; margin: 0; }
+  input[type=range] { position: absolute; left: 0; top: -10px; width: 100%; height: 28px; cursor: pointer; margin: 0; background: transparent; }
   .slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+  /* Visible slider thumb */
+  input[type=range] { opacity: 1 !important; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-card); border: 2.5px solid var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-top: -10px; cursor: pointer; transition: transform 0.1s; }
+  input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); }
+  input[type=range]::-webkit-slider-runnable-track { height: 8px; background: transparent; border-radius: 4px; }
+  input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--bg-card); border: 2.5px solid var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
 
   /* Past entry toggle */
   .datetime-toggle { margin: 20px 24px 0; display: flex; align-items: center; gap: 10px; }
@@ -150,6 +156,29 @@
   .daily-avg-label { font-size: 13px; color: var(--text-secondary); }
   .daily-avg-val { font-family: 'DM Serif Display', serif; font-size: 32px; }
   .empty-state { text-align: center; padding: 40px 24px; color: var(--text-muted); font-size: 14px; }
+
+  /* Daily note */
+  .note-section { padding: 0 24px 24px; margin-top: 16px; }
+  .note-section h2 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+  .note-wrap { position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .note-wrap:focus-within { border-color: var(--accent); }
+  .note-textarea { width: 100%; background: none; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-primary); line-height: 1.6; resize: none; min-height: 80px; }
+  .note-textarea::placeholder { color: var(--text-muted); }
+  .note-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .note-count { font-size: 11px; color: var(--text-muted); }
+  .note-save-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--accent); background: var(--accent-light); border: none; border-radius: 8px; padding: 6px 14px; cursor: pointer; transition: opacity 0.15s; }
+  .note-save-btn:disabled { opacity: 0.35; cursor: default; }
+  .note-display { font-size: 14px; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap; }
+  .note-edit-btn { display: inline-block; margin: 10px 0 0 0; padding: 7px 14px; background: none; color: var(--text-secondary); border: 1px solid var(--text-muted); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; cursor: pointer; letter-spacing: 0.01em; transition: opacity 0.15s; }
+  .note-edit-btn:active { opacity: 0.7; }
+
+  /* Note in chart tooltip area */
+  .chart-day-note { margin-top: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .chart-day-note-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 6px; }
+  .chart-day-note-text { font-size: 14px; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap; }
+  .chart-week-note { margin-top: 8px; background: var(--warn-light); border: 1px solid rgba(199,125,51,0.2); border-radius: 10px; padding: 10px 14px; display: none; }
+  .chart-week-note-date { font-size: 11px; color: var(--warn); margin-bottom: 4px; }
+  .chart-week-note-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; }
 
   /* Charts */
   .chart-tabs { display: flex; padding: 16px 24px 0; }
@@ -221,6 +250,19 @@
 
     <button class="log-btn" id="log-btn">Log this entry</button>
 
+    <div class="note-section" id="note-section">
+      <h2>Today's note</h2>
+      <div class="note-wrap" id="note-wrap">
+        <div class="note-display" id="note-display" style="display:none"></div>
+        <textarea class="note-textarea" id="note-textarea" maxlength="350" placeholder="Add a note about today – e.g. poor sleep, unusual activity…" rows="3"></textarea>
+        <div class="note-footer">
+          <span class="note-count" id="note-count">0 / 350</span>
+          <button class="note-save-btn" id="note-save-btn" disabled>Save note</button>
+        </div>
+      </div>
+      <button class="note-edit-btn" id="note-edit-btn" style="display:none;">✏️ Edit note</button>
+    </div>
+
     <div class="entries-section">
       <div class="entries-section-header">
         <h2 id="entries-day-label">Today's entries</h2>
@@ -257,6 +299,10 @@
       </div>
       <div class="chart-wrap"><canvas id="dayChart" role="img" aria-label="Line chart of individual energy entries for selected day">No data yet.</canvas></div>
       <div class="chart-note">Each point = individual entry · Scale 0–10</div>
+      <div class="chart-day-note" id="chart-day-note" style="display:none">
+        <div class="chart-day-note-label">Note</div>
+        <div class="chart-day-note-text" id="chart-day-note-text"></div>
+      </div>
     </div>
     <div class="chart-section" id="tab-week">
       <div class="chart-stat-row">
@@ -265,6 +311,10 @@
       </div>
       <div class="chart-wrap"><canvas id="weekChart" role="img" aria-label="Line chart of average daily energy over last 7 days">No data yet.</canvas></div>
       <div class="chart-note">Each point = daily average · Scale 0–10</div>
+      <div class="chart-week-note" id="chart-week-note">
+        <div class="chart-week-note-date" id="chart-week-note-date"></div>
+        <div class="chart-week-note-text" id="chart-week-note-text"></div>
+      </div>
     </div>
     <div class="chart-section" id="tab-month">
       <div class="chart-stat-row">
@@ -464,6 +514,7 @@ document.getElementById('log-btn').addEventListener('click', () => {
   addEntry(v, ts);
   viewedDateKey = dateKey(ts);
   renderEntries();
+renderNoteUI();
   showToast('Logged: ' + v + ' · ' + energyLabel(v));
   pastToggle.checked = false;
   pickerEl.classList.remove('visible');
@@ -558,6 +609,82 @@ function statColor(v) {
   return '#2d6a4f';
 }
 
+// ── Note storage ─────────────────────────────────────────────────────
+const NOTE_KEY = 'et_notes_v1';
+
+function loadNotes() {
+  try { return JSON.parse(localStorage.getItem(NOTE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveNote(dateKey, text) {
+  const notes = loadNotes();
+  if (text.trim()) notes[dateKey] = text.trim();
+  else delete notes[dateKey];
+  localStorage.setItem(NOTE_KEY, JSON.stringify(notes));
+}
+function getNote(dateKey) {
+  return loadNotes()[dateKey] || '';
+}
+
+// ── Note UI (Log screen) ──────────────────────────────────────────────
+const noteTextarea = document.getElementById('note-textarea');
+const noteDisplay  = document.getElementById('note-display');
+const noteCount    = document.getElementById('note-count');
+const noteSaveBtn  = document.getElementById('note-save-btn');
+const noteEditBtn  = document.getElementById('note-edit-btn');
+const noteSection  = document.getElementById('note-section');
+
+function renderNoteUI() {
+  const existing = getNote(todayKey());
+  noteCount.textContent = '0 / 350';
+  if (existing) {
+    noteTextarea.value = existing;
+    noteTextarea.style.display = 'none';
+    noteDisplay.textContent = existing;
+    noteDisplay.style.display = 'block';
+    noteCount.style.display = 'none';
+    noteSaveBtn.style.display = 'none';
+    noteEditBtn.style.display = 'inline';
+    noteSection.querySelector('h2').textContent = "Today’s note";
+  } else {
+    noteTextarea.value = '';
+    noteTextarea.style.display = 'block';
+    noteDisplay.style.display = 'none';
+    noteCount.style.display = 'inline';
+    noteSaveBtn.style.display = 'inline';
+    noteSaveBtn.disabled = true;
+    noteEditBtn.style.display = 'none';
+    noteSection.querySelector('h2').textContent = "Today’s note";
+  }
+}
+
+noteTextarea.addEventListener('input', () => {
+  const len = noteTextarea.value.length;
+  noteCount.textContent = len + ' / 350';
+  noteSaveBtn.disabled = len === 0;
+});
+
+noteSaveBtn.addEventListener('click', () => {
+  const text = noteTextarea.value.trim();
+  if (!text) return;
+  saveNote(todayKey(), text);
+  renderNoteUI();
+  showToast('Note saved');
+});
+
+noteEditBtn.addEventListener('click', () => {
+  const existing = getNote(todayKey());
+  noteTextarea.value = existing;
+  noteCount.textContent = existing.length + ' / 350';
+  noteTextarea.style.display = 'block';
+  noteDisplay.style.display = 'none';
+  noteCount.style.display = 'inline';
+  noteSaveBtn.style.display = 'inline';
+  noteSaveBtn.disabled = false;
+  noteEditBtn.style.display = 'none';
+  noteTextarea.focus();
+});
+
 // ── Day chart state ───────────────────────────────────────────────────
 let chartDayKey = todayKey();
 
@@ -591,6 +718,17 @@ function renderDayChart() {
       x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: true, maxTicksLimit: 6 } }
     }}
   });
+
+  // Show note for selected day
+  const dayNote = getNote(chartDayKey);
+  const chartDayNoteEl = document.getElementById('chart-day-note');
+  const chartDayNoteText = document.getElementById('chart-day-note-text');
+  if (dayNote) {
+    chartDayNoteText.textContent = dayNote;
+    chartDayNoteEl.style.display = 'block';
+  } else {
+    chartDayNoteEl.style.display = 'none';
+  }
 }
 
 document.getElementById('chart-day-prev').addEventListener('click', () => {
@@ -637,7 +775,26 @@ function renderCharts() {
   if (weekChart) weekChart.destroy();
   weekChart = new Chart(document.getElementById('weekChart'), {
     type: 'line', data: { labels: wData.labels, datasets: [ds(wData.data)] },
-    options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: false } } } }
+    options: { ...chartDefaults,
+      onClick: (evt, elements) => {
+        const weekNoteEl   = document.getElementById('chart-week-note');
+        const weekNoteDate = document.getElementById('chart-week-note-date');
+        const weekNoteText = document.getElementById('chart-week-note-text');
+        if (!elements.length) { weekNoteEl.style.display = 'none'; return; }
+        const idx  = elements[0].index;
+        const dKey = getPastDays(7)[idx];
+        const note = getNote(dKey);
+        if (note) {
+          const d = new Date(dKey + 'T12:00:00');
+          weekNoteDate.textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+          weekNoteText.textContent = note;
+          weekNoteEl.style.display = 'block';
+        } else {
+          weekNoteEl.style.display = 'none';
+        }
+      },
+      scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, autoSkip: false } } }
+    }
   });
 
   if (monthChart) monthChart.destroy();
