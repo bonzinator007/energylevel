@@ -157,6 +157,18 @@
   .daily-avg-val { font-family: 'DM Serif Display', serif; font-size: 32px; }
   .empty-state { text-align: center; padding: 40px 24px; color: var(--text-muted); font-size: 14px; }
 
+  /* Menu */
+  .menu-btn { position: absolute; top: 52px; right: 20px; width: 36px; height: 36px; background: none; border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); z-index: 20; }
+  .menu-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .menu-dropdown { position: absolute; top: 94px; right: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 50; min-width: 200px; overflow: hidden; display: none; }
+  .menu-dropdown.open { display: block; }
+  .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; font-size: 14px; color: var(--text-primary); background: none; border: none; width: 100%; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+  .menu-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+  .menu-item:active { background: var(--border); }
+  .menu-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; color: var(--accent); }
+  .menu-overlay { position: fixed; inset: 0; z-index: 40; display: none; }
+  .menu-overlay.open { display: block; }
+
   /* Daily note */
   .note-section { padding: 0 24px 24px; margin-top: 16px; }
   .note-section h2 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
@@ -208,10 +220,25 @@
 
   <!-- LOG SCREEN -->
   <div class="screen active" id="screen-log">
-    <div class="screen-header">
+    <div class="screen-header" style="position:relative;">
       <h1>How are you feeling?</h1>
       <p id="log-date"></p>
+      <button class="menu-btn" id="menu-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/></svg>
+      </button>
     </div>
+    <div class="menu-overlay" id="menu-overlay"></div>
+    <div class="menu-dropdown" id="menu-dropdown">
+      <button class="menu-item" id="menu-export">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export data (JSON)
+      </button>
+      <button class="menu-item" id="menu-import">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="17"/></svg>
+        Import data (JSON)
+      </button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none">
 
     <div class="log-hero">
       <div class="log-hero-label">Energy level</div>
@@ -515,6 +542,20 @@ document.getElementById('log-btn').addEventListener('click', () => {
   viewedDateKey = dateKey(ts);
   renderEntries();
 renderNoteUI();
+
+// ── Service Worker ────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          showToast('Update available – reopen the app to refresh');
+        }
+      });
+    });
+  });
+}
   showToast('Logged: ' + v + ' · ' + energyLabel(v));
   pastToggle.checked = false;
   pickerEl.classList.remove('visible');
@@ -608,6 +649,78 @@ function statColor(v) {
   if (v <= 6) return '#c77d33';
   return '#2d6a4f';
 }
+
+// ── Menu ─────────────────────────────────────────────────────────────
+const menuBtn      = document.getElementById('menu-btn');
+const menuDropdown = document.getElementById('menu-dropdown');
+const menuOverlay  = document.getElementById('menu-overlay');
+
+function toggleMenu(open) {
+  menuDropdown.classList.toggle('open', open);
+  menuOverlay.classList.toggle('open', open);
+}
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(!menuDropdown.classList.contains('open')); });
+menuOverlay.addEventListener('click', () => toggleMenu(false));
+
+// ── Export ────────────────────────────────────────────────────────────
+document.getElementById('menu-export').addEventListener('click', () => {
+  toggleMenu(false);
+  const entries = loadEntries();
+  const notes   = loadNotes();
+  const payload = { version: 1, exported: new Date().toISOString(), entries, notes };
+  const blob    = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url     = URL.createObjectURL(blob);
+  const a       = document.createElement('a');
+  const date    = new Date().toISOString().slice(0, 10);
+  a.href        = url;
+  a.download    = 'energy-tracker-' + date + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported successfully');
+});
+
+// ── Import ────────────────────────────────────────────────────────────
+document.getElementById('menu-import').addEventListener('click', () => {
+  toggleMenu(false);
+  document.getElementById('import-file').click();
+});
+
+document.getElementById('import-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const data = JSON.parse(evt.target.result);
+      // Support both new format {version,entries,notes} and raw array
+      const incoming = Array.isArray(data) ? { entries: data, notes: {} } : data;
+      if (!Array.isArray(incoming.entries)) throw new Error('Invalid format');
+
+      const existingEntries = loadEntries();
+      const existingNotes   = loadNotes();
+
+      // Merge entries – deduplicate by timestamp
+      const merged = [...existingEntries];
+      incoming.entries.forEach(e => {
+        if (!merged.find(x => x.ts === e.ts)) merged.push(e);
+      });
+      merged.sort((a, b) => a.ts.localeCompare(b.ts));
+      saveEntries(merged);
+
+      // Merge notes – imported notes fill gaps, existing notes take priority
+      const mergedNotes = { ...(incoming.notes || {}), ...existingNotes };
+      localStorage.setItem('et_notes_v1', JSON.stringify(mergedNotes));
+
+      renderEntries();
+      renderNoteUI();
+      showToast('Import successful – ' + incoming.entries.length + ' entries merged');
+    } catch (err) {
+      showToast('Import failed – invalid file');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
 
 // ── Note storage ─────────────────────────────────────────────────────
 const NOTE_KEY = 'et_notes_v1';
